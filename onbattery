@@ -1,0 +1,26 @@
+#!/bin/sh
+prefix=/usr
+exec_prefix=${prefix}
+
+APCPID=/var/run/apcupsd.pid
+APCUPSD=/sbin/apcupsd
+SHUTDOWN=/sbin/shutdown
+SCRIPTSHELL=/bin/sh
+SCRIPTDIR=/etc/apcupsd
+WALL=wall
+HOSTNAME='hostname'
+MSG="$HOSTNAME UPS $1 Power Failure from 30s - TAV OFF AIR!!!"
+#
+(
+   echo "Subject: $MSG"
+   echo " "
+   echo "$MSG"
+   echo " "
+   /sbin/apcaccess status
+) | $APCUPSD_MAIL -s "$MSG" $SYSADMIN
+
+echo "TAV250 -> OFF AIR (in progress) ---" | ${WALL}
+/home/ldadmin/dev/tav250/tav250_offAir.py
+echo "TAV250 -> OFF AIR (done) !!!" | ${WALL}
+
+exit 0
